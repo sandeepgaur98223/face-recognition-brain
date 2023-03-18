@@ -6,7 +6,9 @@ import Rank from './components/Rank/Rank';
 import ParticlesBg from 'particles-bg';
 import {Component} from 'react';
 //import Clarifai from 'clarifai';
-import FaceRecognition from './components/FaceRecognition/FaceRecognition'
+import FaceRecognition from './components/FaceRecognition/FaceRecognition';
+import SignIn from './components/SignIn/SignIn'
+import Register from './components/Register/Register'
 //import axios, * as others from 'axios';
 
 
@@ -29,7 +31,9 @@ constructor(){
   this.state={
     input:'',
     imageUrl:'',
-    box:{}
+    box:{},
+    route:'SignIn',
+    isSignedIn:false
   }
 }
 
@@ -56,7 +60,6 @@ bottomrow:height- (clarifaiFace.bottom_row*height)
 
 
 displayFaceBox=(box)=>{
-  console.log("box",box);
   this.setState({box:box});
 }
 
@@ -107,23 +110,45 @@ fetch("https://api.clarifai.com/v2/models/"+MODEL_ID+"/outputs", requestOptions)
   
 }
 
-  
+onRouteChange=(route)=>{
+   this.setState({route:route});
+  if(route==='home')
+  {
+    this.setState({isSignedIn:true})
+  }
+  else 
+  {
+     this.setState({isSignedIn:false})
+  }
+
+}
 
 render(){
   return (
     <div className="App">
     <ParticlesBg type="cobweb" bg={true} />
+    
+    <Navigation onRouteChange={this.onRouteChange} isSignedIn={this.state.isSignedIn}/>
 
-    <Navigation />
-    <Logo />
-    <Rank />
-    <ImageLinkForm 
-    onInputChange={this.onInputChange}
-    onButtonSubmit={this.onButtonSubmit}
-    />
+    {
+      this.state.route === 'SignIn'
+      ? <SignIn onRouteChange={this.onRouteChange}/>
+      : (
+        this.state.route==='Register'
+        ?<Register onRouteChange={this.onRouteChange}/>
+        :<div>
+          <Logo />
+          <Rank />
+          <ImageLinkForm 
+          onInputChange={this.onInputChange}
+          onButtonSubmit={this.onButtonSubmit}
+          />
 
-    <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+          <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+        </div>
+        )
 
+    }  
     </div>
   );
 }
