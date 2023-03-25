@@ -33,9 +33,40 @@ constructor(){
     imageUrl:'',
     box:{},
     route:'SignIn',
-    isSignedIn:false
+    isSignedIn:false,
+    user:  {
+      id:'',
+      name:'',
+      email:'',
+      entries:0,
+      joined: ''
+
+  }
   }
 }
+
+loadUser=(data)=>{
+
+this.setState({user : {
+  id: data.id,
+  name:data.name,
+  email:data.email,
+  entries:data.entries,
+  joined: data.joined
+}})
+
+}
+
+
+/*
+componentDidMount(){
+  fetch('http://localhost:3001/')
+  .then(response=>response.json())
+ // .then(console.log());
+ 
+  .then(data=>console.log('1',data))
+}
+*/
 
 onInputChange=(event)=>{
   console.log(event.target.value);
@@ -135,7 +166,7 @@ render(){
       ? <SignIn onRouteChange={this.onRouteChange}/>
       : (
         this.state.route==='Register'
-        ?<Register onRouteChange={this.onRouteChange}/>
+        ?<Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
         :<div>
           <Logo />
           <Rank />
