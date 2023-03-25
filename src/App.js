@@ -136,7 +136,27 @@ const requestOptions = {
 
 fetch("https://api.clarifai.com/v2/models/"+MODEL_ID+"/outputs", requestOptions)
     .then(response => response.json())
-    .then(result =>this.displayFaceBox(this.calculateFaceLocation(result)) )
+    .then(result =>{
+      if(result)
+      {
+        fetch('http://localhost:3001/image',{
+          method:'put',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            id:this.state.user.id
+          }
+          )
+        })
+        .then(response=>response.json())
+        .then(count=>{
+          this.setState(Object.assign(this.state.user,{entries:count}))
+        })
+
+      }
+      
+      this.displayFaceBox(this.calculateFaceLocation(result)) 
+    
+    })
     .catch(error => console.log('error', error));
   
 }
@@ -163,13 +183,15 @@ render(){
 
     {
       this.state.route === 'SignIn'
-      ? <SignIn onRouteChange={this.onRouteChange}/>
+      ? <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
       : (
         this.state.route==='Register'
         ?<Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
         :<div>
           <Logo />
-          <Rank />
+          <Rank name={this.state.user.name} 
+          entries={this.state.user.entries} 
+          />
           <ImageLinkForm 
           onInputChange={this.onInputChange}
           onButtonSubmit={this.onButtonSubmit}
