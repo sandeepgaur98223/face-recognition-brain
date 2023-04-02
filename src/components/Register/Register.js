@@ -29,8 +29,7 @@ onPasswordChange=(event)=>{
 
 onSubmitSignIn=()=>
 {
-	//console.log('onSubmitSignIn',this.state);
-	fetch('http://localhost:3001/register',{
+	fetch('https://mybackend-u7da.onrender.com/register',{
 		method:'post',
 		headers:{'Content-Type':'application/json'},
 		body:JSON.stringify({
@@ -42,8 +41,17 @@ onSubmitSignIn=()=>
 	})
 	.then(response=>response.json())
 	.then(user=>{
-		this.props.loadUser(user);
-		this.props.onRouteChange('home');
+		if(user!=='All the fields should be filled')
+		{
+			this.props.loadUser(user);
+			this.props.onRouteChange('home');
+
+		}
+		else
+		{
+			alert('All the fields should be filled!')
+
+		}
 
 	})
 	

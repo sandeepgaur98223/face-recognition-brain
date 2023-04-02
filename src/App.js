@@ -5,11 +5,10 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import ParticlesBg from 'particles-bg';
 import {Component} from 'react';
-//import Clarifai from 'clarifai';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import SignIn from './components/SignIn/SignIn'
 import Register from './components/Register/Register'
-//import axios, * as others from 'axios';
+
 
 
 
@@ -18,31 +17,32 @@ import Register from './components/Register/Register'
  // apiKey:'43bacb11611e40eeabddeda2bcf11fd8'
 
 //});
-//This is test
+
 const PAT='57302919f3ba46d1a4d1511069947822'
 //const USER_ID = 'sandeepgaur98223';       
 //const APP_ID = 'firstapp';
 const MODEL_ID = 'face-detection';
+const initialState={
+  input:'',
+  imageUrl:'',
+  box:{},
+  route:'SignIn',
+  isSignedIn:false,
+  user:  {
+    id:'',
+    name:'',
+    email:'',
+    entries:0,
+    joined: ''
+
+}
+};
 
 class App extends Component {
 
 constructor(){
   super();
-  this.state={
-    input:'',
-    imageUrl:'',
-    box:{},
-    route:'SignIn',
-    isSignedIn:false,
-    user:  {
-      id:'',
-      name:'',
-      email:'',
-      entries:0,
-      joined: ''
-
-  }
-  }
+  this.state=initialState;
 }
 
 loadUser=(data)=>{
@@ -57,16 +57,6 @@ this.setState({user : {
 
 }
 
-
-/*
-componentDidMount(){
-  fetch('http://localhost:3001/')
-  .then(response=>response.json())
- // .then(console.log());
- 
-  .then(data=>console.log('1',data))
-}
-*/
 
 onInputChange=(event)=>{
   console.log(event.target.value);
@@ -99,9 +89,7 @@ onButtonSubmit=()=>{
  
 this.setState({imageUrl:this.state.input})
 
-console.log(this.state.imageUrl);
 
- //console.log(this.state.input)
 const raw = JSON.stringify({
   "user_app_id": {
     "user_id": "clarifai",
@@ -118,7 +106,6 @@ const raw = JSON.stringify({
   ]
 });
 
-console.log(raw);
 
 const requestOptions = {
     method: 'POST',
@@ -139,7 +126,7 @@ fetch("https://api.clarifai.com/v2/models/"+MODEL_ID+"/outputs", requestOptions)
     .then(result =>{
       if(result)
       {
-        fetch('http://localhost:3001/image',{
+        fetch('https://mybackend-u7da.onrender.com/image',{
           method:'put',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({
@@ -151,6 +138,7 @@ fetch("https://api.clarifai.com/v2/models/"+MODEL_ID+"/outputs", requestOptions)
         .then(count=>{
           this.setState(Object.assign(this.state.user,{entries:count}))
         })
+        .catch(err=>{console.log('cannot load image',err);})
 
       }
       
@@ -169,7 +157,11 @@ onRouteChange=(route)=>{
   }
   else 
   {
-     this.setState({isSignedIn:false})
+     this.setState({isSignedIn:false});
+     if(route==='SignOut')
+     {
+     this.setState(initialState);
+     }
   }
 
 }
